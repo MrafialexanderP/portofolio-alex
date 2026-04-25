@@ -25,17 +25,20 @@ const Hero = () => {
             <a href="#projects" className="btn-primary">
               View My Work <ArrowRight size={20} />
             </a>
-            <div style={{ display: 'flex', gap: '1rem', marginLeft: '1rem' }}>
-              <a href="https://github.com/MrafialexanderP" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', transition: 'color 0.3s' }} className="social-link">
-                <FaGithub size={24} />
+            <ul className="wrapper" style={{ marginLeft: '1rem' }}>
+              <a href="https://github.com/MrafialexanderP" target="_blank" rel="noopener noreferrer" className="icon github">
+                <span className="tooltip">GitHub</span>
+                <FaGithub size={20} />
               </a>
-              <a href="#" style={{ color: 'var(--text-secondary)', transition: 'color 0.3s' }} className="social-link">
-                <FaLinkedin size={24} />
+              <a href="https://www.linkedin.com/in/rafi-alexander-7ab8bb218/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BLg1q90MhS0CmPnmjbsbKxw%3D%3D" className="icon linkedin">
+                <span className="tooltip">LinkedIn</span>
+                <FaLinkedin size={20} />
               </a>
-              <a href="mailto:[EMAIL_ADDRESS]" style={{ color: 'var(--text-secondary)', transition: 'color 0.3s' }} className="social-link">
-                <Mail size={24} />
+              <a href="mailto:alexanderpmrafi@gmail.com" className="icon email">
+                <span className="tooltip">Email</span>
+                <Mail size={20} />
               </a>
-            </div>
+            </ul>
           </div>
         </div>
 
@@ -59,12 +62,100 @@ const Hero = () => {
               overflow: 'hidden'
             }}>
               {/* Placeholder for Profile Picture */}
-              <img src="https://api.dicebear.com/9.x/avataaars-neutral/svg?seed=Katherine" alt="Rafi Alexander" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src="alex.jpg" alt="Rafi Alexander" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
         </div>
 
       </div>
+      <style>{`
+        .wrapper {
+          display: inline-flex;
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          font-family: "Poppins", sans-serif;
+          justify-content: center;
+        }
+
+        .wrapper .icon {
+          position: relative;
+          background: #fff;
+          border-radius: 50%;
+          margin: 0 10px;
+          width: 45px;
+          height: 45px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          color: #333;
+          text-decoration: none;
+        }
+
+        .wrapper .tooltip {
+          position: absolute;
+          top: 0;
+          font-size: 14px;
+          background: #fff;
+          color: #fff;
+          padding: 5px 8px;
+          border-radius: 5px;
+          box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+          opacity: 0;
+          pointer-events: none;
+          transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          white-space: nowrap;
+        }
+
+        .wrapper .tooltip::before {
+          position: absolute;
+          content: "";
+          height: 8px;
+          width: 8px;
+          background: #fff;
+          bottom: -3px;
+          left: 50%;
+          transform: translate(-50%) rotate(45deg);
+          transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .wrapper .icon:hover .tooltip {
+          top: -45px;
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+        }
+
+        .wrapper .icon:hover span,
+        .wrapper .icon:hover .tooltip {
+          text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .wrapper .github:hover,
+        .wrapper .github:hover .tooltip,
+        .wrapper .github:hover .tooltip::before {
+          background: #333;
+          color: #fff;
+        }
+
+        .wrapper .linkedin:hover,
+        .wrapper .linkedin:hover .tooltip,
+        .wrapper .linkedin:hover .tooltip::before {
+          background: #0077b5;
+          color: #fff;
+        }
+
+        .wrapper .email:hover,
+        .wrapper .email:hover .tooltip,
+        .wrapper .email:hover .tooltip::before {
+          background: #ea4335;
+          color: #fff;
+        }
+      `}</style>
     </section>
   );
 };

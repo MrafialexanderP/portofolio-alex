@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { FaGithub } from 'react-icons/fa';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Projects = () => {
   const projects = [
@@ -27,31 +31,125 @@ const Projects = () => {
     {
       title: 'Company Profile PT RSI',
       description: 'Website company profile perusahaan untuk PT Rekayasa Surya Home.',
-      image: '/rsi.png', // Ganti dengan nama file gambar Anda di folder public
+      image: '/rsi.png',
       tech: ['JavaScript', 'HTML', 'CSS'],
       links: {
         github: 'https://github.com/MrafialexanderP/rekayasa-surya-home.git',
         live: ''
       }
+    },
+    {
+      title: 'Sistem Deteksi Kantuk Mahasiswa',
+      description: 'Sistem cerdas berbasis penglihatan komputer (Computer Vision) untuk mendeteksi tingkat kantuk mahasiswa saat berada di kelas.',
+      image: '',
+      tech: ['Python', 'Computer Vision'],
+      links: {
+        github: 'https://github.com/MrafialexanderP/Sistem_Deteksi_Kantuk_Mahasiswa.git',
+        live: ''
+      }
+    },
+    {
+      title: 'Dashboard Admin Face Recognition',
+      description: 'Dashboard admin terintegrasi untuk mendeteksi orang yang masuk menggunakan teknologi pengenalan wajah (Face Recognition).',
+      image: '',
+      tech: ['Python', 'Dashboard'],
+      links: {
+        github: 'https://github.com/MrafialexanderP/Dashboard_AdminUT.git',
+        live: ''
+      }
+    },
+    {
+      title: 'Dashboard Penyiraman Tanaman Otomatis',
+      description: 'Sistem IoT PlanKita dengan antarmuka dashboard untuk memantau dan melakukan penyiraman tanaman secara otomatis.',
+      image: '',
+      tech: ['IoT', 'Web Dashboard'],
+      links: {
+        github: 'https://github.com/MrafialexanderP/PlanKita_Secomp.git',
+        live: ''
+      }
+    },
+    {
+      title: 'JR Konveksi',
+      description: 'Website manajemen penjualan dan sistem kasir/login untuk kelancaran operasional toko baju JR Konveksi.',
+      image: '', 
+      tech: ['Web', 'Dashboard'],
+      links: {
+        github: '',
+        live: 'https://jrkonveksi.my.id/login'
+      }
+    },
+    {
+      title: 'Website Kasir',
+      description: 'Aplikasi sistem Point of Sale (POS) modern berbasis web untuk mengelola transaksi dengan mudah dan cepat.',
+      image: '',
+      tech: ['Web', 'Database'],
+      links: {
+        github: 'https://github.com/MrafialexanderP/Website-kasir.git',
+        live: ''
+      }
     }
   ];
 
-  return (
-    <section id="projects" className="section">
-      <div className="container">
-        <h2 className="section-title">Featured Projects</h2>
+  const containerRef = useRef(null);
 
-        <div className="grid grid-cols-3">
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo('.projects-title',
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.projects-title',
+            start: 'top 85%',
+          }
+        }
+      );
+
+      gsap.fromTo('.project-card', 
+        { y: 100, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.8, 
+          stagger: 0.2, 
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top 75%',
+          }
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section id="projects" className="section" ref={containerRef}>
+      <div className="container">
+        <h2 className="section-title projects-title">Featured Projects</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => (
-            <div key={index} className="glass-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ height: '200px', overflow: 'hidden' }}>
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                />
+            <div key={index} className="glass-card project-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ height: '200px', overflow: 'hidden', backgroundColor: 'rgba(15, 23, 42, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {project.image ? (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease' }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                  />
+                ) : (
+                  <div style={{ color: 'var(--text-secondary)', textAlign: 'center', opacity: 0.5 }}>
+                    <span style={{ fontSize: '3rem', display: 'block', marginBottom: '0.5rem' }}>📷</span>
+                    <p style={{ margin: 0, fontSize: '0.9rem' }}>No Image Available</p>
+                  </div>
+                )}
               </div>
               <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#fff' }}>{project.title}</h3>

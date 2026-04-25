@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const ContributionGrid = ({ year, totalContributions, data }) => {
   // Constants for GitHub graph colors (Dark Mode)
@@ -128,14 +132,57 @@ const GithubContributions = () => {
   const data2025 = React.useMemo(() => generateData(2025), []);
   const data2026 = React.useMemo(() => generateData(2026), []);
 
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Animate title
+      gsap.fromTo('.github-title',
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.github-title',
+            start: 'top 80%',
+          }
+        }
+      );
+
+      // Animate the grids
+      gsap.fromTo('.github-grid',
+        { y: 100, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          stagger: 0.3,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top 75%',
+          }
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="github" className="section" style={{ backgroundColor: 'rgba(30, 41, 59, 0.3)' }}>
+    <section id="github" className="section" ref={containerRef} style={{ paddingTop: '6rem', paddingBottom: '6rem' }}>
       <div className="container">
-        <h2 className="section-title">GitHub Contributions</h2>
+        <h2 className="section-title github-title">GitHub Contributions</h2>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <ContributionGrid year="2026" totalContributions={185} data={data2026} />
-          <ContributionGrid year="2025" totalContributions={193} data={data2025} />
+          <div className="github-grid">
+            <ContributionGrid year="2026" totalContributions={185} data={data2026} />
+          </div>
+          <div className="github-grid">
+            <ContributionGrid year="2025" totalContributions={193} data={data2025} />
+          </div>
         </div>
       </div>
     </section>

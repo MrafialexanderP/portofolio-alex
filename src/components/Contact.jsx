@@ -10,52 +10,30 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitStatus(null);
     
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
     const message = document.getElementById('message').value;
     
-    // API Key Web3Forms
-    // TODO: Masukkan Access Key Anda di bawah ini
-    const ACCESS_KEY = "YOUR_ACCESS_KEY_HERE";
+    const subject = `New Message from ${name} via Portfolio`;
+    const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
     
-    if (ACCESS_KEY === "YOUR_ACCESS_KEY_HERE") {
-      alert("Harap masukkan Access Key Web3Forms terlebih dahulu di kode Contact.jsx!");
+    const mailtoLink = `mailto:alexanderpmrafi@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Membuka aplikasi email default pengguna
+    window.location.href = mailtoLink;
+    
+    setSubmitStatus('success');
+    e.target.reset(); // Kosongkan form setelah sukses
+    
+    // Hilangkan status sukses setelah 3 detik
+    setTimeout(() => {
       setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          access_key: ACCESS_KEY,
-          name: name,
-          email: email,
-          message: message,
-        }),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        setSubmitStatus('success');
-        e.target.reset(); // Kosongkan form setelah sukses
-      } else {
-        setSubmitStatus('error');
-      }
-    } catch (error) {
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
+      setSubmitStatus(null);
+    }, 3000);
   };
 
   useEffect(() => {

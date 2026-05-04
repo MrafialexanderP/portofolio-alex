@@ -7,6 +7,56 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
   const containerRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+    
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const message = document.getElementById('message').value;
+    
+    // API Key Web3Forms
+    // TODO: Masukkan Access Key Anda di bawah ini
+    const ACCESS_KEY = "YOUR_ACCESS_KEY_HERE";
+    
+    if (ACCESS_KEY === "YOUR_ACCESS_KEY_HERE") {
+      alert("Harap masukkan Access Key Web3Forms terlebih dahulu di kode Contact.jsx!");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: ACCESS_KEY,
+          name: name,
+          email: email,
+          message: message,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setSubmitStatus('success');
+        e.target.reset(); // Kosongkan form setelah sukses
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -60,101 +110,137 @@ const Contact = () => {
   }, []);
 
   return (
-    <section id="contact" className="section" ref={containerRef}>
+    <section id="contact" className="section" ref={containerRef} style={{ backgroundColor: 'var(--accent-3)' }}>
       <div className="container">
-        <h2 className="section-title contact-title">Get In Touch</h2>
+        <h2 className="section-title contact-title" style={{ color: '#fff' }}>Get In Touch</h2>
 
-        <div style={{ display: 'flex', gap: '4rem', flexWrap: 'wrap', maxWidth: '900px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', gap: '4rem', flexWrap: 'wrap', maxWidth: '1000px', margin: '0 auto' }}>
 
-          <div style={{ flex: '1 1 300px' }} className="contact-info">
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#fff' }}>Let's talk about your next project</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+          <div style={{ flex: '1 1 300px' }} className="contact-info brutal-card">
+            <h3 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--text-primary)', fontWeight: 900, textTransform: 'uppercase', lineHeight: 1.1 }}>Let's talk about your next project</h3>
+            <p style={{ color: 'var(--text-primary)', marginBottom: '2rem', fontWeight: 500, fontSize: '1.1rem' }}>
               I'm currently available for new opportunities. Whether you have a question or just want to say hi, I'll try my best to get back to you!
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
-                  <Mail size={24} />
+                <div style={{ width: '60px', height: '60px', border: 'var(--border-width) solid var(--border-color)', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', boxShadow: '4px 4px 0px 0px var(--border-color)' }}>
+                  <Mail size={30} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <h4 style={{ color: '#fff', fontSize: '1rem', marginBottom: '0.25rem' }}>Email</h4>
-                  <p style={{ color: 'var(--text-secondary)' }}>alexanderpmrafi@gmail.com</p>
+                  <h4 style={{ color: 'var(--text-primary)', fontSize: '1.2rem', marginBottom: '0.25rem', fontWeight: 900, textTransform: 'uppercase' }}>Email</h4>
+                  <p style={{ color: 'var(--text-primary)', fontWeight: 600 }}>alexanderpmrafi@gmail.com</p>
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(56, 189, 248, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent)' }}>
-                  <MapPin size={24} />
+                <div style={{ width: '60px', height: '60px', border: 'var(--border-width) solid var(--border-color)', background: 'var(--accent-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#000', boxShadow: '4px 4px 0px 0px var(--border-color)' }}>
+                  <MapPin size={30} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <h4 style={{ color: '#fff', fontSize: '1rem', marginBottom: '0.25rem' }}>Location</h4>
-                  <p style={{ color: 'var(--text-secondary)' }}>Indonesia</p>
+                  <h4 style={{ color: 'var(--text-primary)', fontSize: '1.2rem', marginBottom: '0.25rem', fontWeight: 900, textTransform: 'uppercase' }}>Location</h4>
+                  <p style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Indonesia</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div style={{ flex: '1 1 400px' }} className="glass-card contact-form">
-            <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} onSubmit={(e) => e.preventDefault()}>
+          <div style={{ flex: '1 1 400px' }} className="brutal-card contact-form">
+            <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Name</label>
+                <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 800, textTransform: 'uppercase' }}>Name</label>
                 <input
                   type="text"
                   id="name"
-                  placeholder="John Doe"
+                  name="name"
+                  required
+                  placeholder="JOHN DOE"
                   style={{
                     width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(15, 23, 42, 0.5)',
-                    color: '#fff',
+                    padding: '1rem',
+                    border: 'var(--border-width) solid var(--border-color)',
+                    background: '#fff',
+                    color: '#000',
                     outline: 'none',
-                    fontFamily: 'inherit'
+                    fontFamily: 'inherit',
+                    fontWeight: 600,
+                    boxShadow: '4px 4px 0px 0px var(--border-color)',
+                    transition: 'box-shadow 0.1s'
                   }}
+                  onFocus={(e) => e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--border-color)'}
+                  onBlur={(e) => e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--border-color)'}
                 />
               </div>
               <div>
-                <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Email</label>
+                <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 800, textTransform: 'uppercase' }}>Email</label>
                 <input
                   type="email"
                   id="email"
-                  placeholder="john@example.com"
+                  name="email"
+                  required
+                  placeholder="JOHN@EXAMPLE.COM"
                   style={{
                     width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(15, 23, 42, 0.5)',
-                    color: '#fff',
+                    padding: '1rem',
+                    border: 'var(--border-width) solid var(--border-color)',
+                    background: '#fff',
+                    color: '#000',
                     outline: 'none',
-                    fontFamily: 'inherit'
+                    fontFamily: 'inherit',
+                    fontWeight: 600,
+                    boxShadow: '4px 4px 0px 0px var(--border-color)',
+                    transition: 'box-shadow 0.1s'
                   }}
+                  onFocus={(e) => e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--border-color)'}
+                  onBlur={(e) => e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--border-color)'}
                 />
               </div>
               <div>
-                <label htmlFor="message" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Message</label>
+                <label htmlFor="message" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 800, textTransform: 'uppercase' }}>Message</label>
                 <textarea
                   id="message"
+                  name="message"
+                  required
                   rows="4"
-                  placeholder="Hello, I'd like to talk about..."
+                  placeholder="HELLO, I'D LIKE TO TALK ABOUT..."
                   style={{
                     width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(15, 23, 42, 0.5)',
-                    color: '#fff',
+                    padding: '1rem',
+                    border: 'var(--border-width) solid var(--border-color)',
+                    background: '#fff',
+                    color: '#000',
                     outline: 'none',
                     fontFamily: 'inherit',
+                    fontWeight: 600,
+                    boxShadow: '4px 4px 0px 0px var(--border-color)',
+                    transition: 'box-shadow 0.1s',
                     resize: 'vertical'
                   }}
+                  onFocus={(e) => e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--border-color)'}
+                  onBlur={(e) => e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--border-color)'}
                 ></textarea>
               </div>
-              <button className="btn-primary" style={{ justifyContent: 'center' }}>
-                Send Message <Send size={18} />
+              <button 
+                type="submit" 
+                className="btn-primary" 
+                style={{ justifyContent: 'center', opacity: isSubmitting ? 0.7 : 1, width: '100%', marginTop: '1rem', padding: '1rem' }}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'SENDING...' : (
+                  <>SEND MESSAGE <Send size={20} strokeWidth={3} /></>
+                )}
               </button>
+              
+              {submitStatus === 'success' && (
+                <div style={{ backgroundColor: '#4ade80', border: 'var(--border-width) solid #000', padding: '1rem', marginTop: '1rem', fontWeight: 800, textAlign: 'center', boxShadow: '4px 4px 0px 0px #000' }}>
+                  PESAN ANDA BERHASIL DIKIRIM!
+                </div>
+              )}
+              {submitStatus === 'error' && (
+                <div style={{ backgroundColor: '#f87171', border: 'var(--border-width) solid #000', padding: '1rem', marginTop: '1rem', fontWeight: 800, textAlign: 'center', boxShadow: '4px 4px 0px 0px #000' }}>
+                  GAGAL MENGIRIM PESAN. COBA LAGI NANTI.
+                </div>
+              )}
             </form>
           </div>
 

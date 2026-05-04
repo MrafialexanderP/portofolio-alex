@@ -4,37 +4,37 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ContributionGrid = ({ year, totalContributions, data }) => {
-  // Constants for GitHub graph colors (Dark Mode)
+const ContributionGrid = ({ year, totalContributions, data, accentColor }) => {
+  // Constants for GitHub graph colors (Neobrutalism High Contrast)
   const colors = {
-    0: 'rgba(255, 255, 255, 0.05)', // Empty
-    1: '#0e4429', // Lightest green
-    2: '#006d32', 
-    3: '#26a641', 
-    4: '#39d353'  // Darkest/brightest green
+    0: 'var(--bg-surface)', // Empty
+    1: '#bbf7d0', // Light green
+    2: '#4ade80', 
+    3: '#16a34a', 
+    4: '#14532d'  // Dark green
   };
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const days = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
   return (
-    <div style={{ marginBottom: '2rem', width: '100%' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ color: '#fff', fontWeight: 500 }}>{totalContributions} contributions in {year}</h3>
+    <div className="brutal-card" style={{ marginBottom: '2rem', width: '100%', backgroundColor: accentColor }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: 'var(--border-width) solid var(--border-color)', paddingBottom: '0.5rem' }}>
+        <h3 style={{ color: '#000', fontWeight: 900, fontSize: '1.5rem', textTransform: 'uppercase' }}>{totalContributions} contributions in {year}</h3>
       </div>
       
       <div style={{ 
         padding: '1.5rem', 
-        border: '1px solid rgba(255,255,255,0.1)', 
-        borderRadius: '8px', 
-        backgroundColor: 'rgba(15, 23, 42, 0.5)',
-        overflowX: 'auto'
+        border: 'var(--border-width) solid var(--border-color)', 
+        backgroundColor: '#fff',
+        overflowX: 'auto',
+        boxShadow: '4px 4px 0px 0px var(--border-color)'
       }}>
         <div style={{ display: 'flex', gap: '0.5rem', minWidth: '800px' }}>
           {/* Days column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '1.5rem', paddingRight: '0.5rem' }}>
             {days.map((day, i) => (
-              <div key={i} style={{ height: '12px', fontSize: '10px', color: 'var(--text-secondary)', lineHeight: '12px' }}>
+              <div key={i} style={{ height: '14px', fontSize: '12px', color: '#000', fontWeight: 800, lineHeight: '14px' }}>
                 {day}
               </div>
             ))}
@@ -45,7 +45,7 @@ const ContributionGrid = ({ year, totalContributions, data }) => {
             {/* Months row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '0.5rem', paddingRight: '2rem' }}>
               {months.map((month, i) => (
-                <span key={i} style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>{month}</span>
+                <span key={i} style={{ fontSize: '12px', color: '#000', fontWeight: 800, textTransform: 'uppercase' }}>{month}</span>
               ))}
             </div>
 
@@ -57,20 +57,23 @@ const ContributionGrid = ({ year, totalContributions, data }) => {
                     <div 
                       key={dayIndex} 
                       style={{ 
-                        width: '12px', 
-                        height: '12px', 
+                        width: '14px', 
+                        height: '14px', 
                         backgroundColor: colors[level] || colors[0], 
-                        borderRadius: '2px',
-                        transition: 'transform 0.2s',
+                        border: '2px solid #000',
+                        transition: 'transform 0.1s',
                         cursor: 'pointer'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'scale(1.2)';
-                        e.currentTarget.style.border = '1px solid rgba(255,255,255,0.5)';
+                        e.currentTarget.style.transform = 'scale(1.3) translate(-1px, -1px)';
+                        e.currentTarget.style.boxShadow = '2px 2px 0px 0px #000';
+                        e.currentTarget.style.zIndex = 10;
+                        e.currentTarget.style.position = 'relative';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'scale(1)';
-                        e.currentTarget.style.border = 'none';
+                        e.currentTarget.style.transform = 'scale(1) translate(0, 0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.zIndex = 1;
                       }}
                     />
                   ))}
@@ -81,13 +84,13 @@ const ContributionGrid = ({ year, totalContributions, data }) => {
         </div>
         
         {/* Legend */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', fontSize: '10px', color: 'var(--text-secondary)' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '0.5rem', marginTop: '1.5rem', fontSize: '12px', color: '#000', fontWeight: 800, textTransform: 'uppercase' }}>
           <span>Less</span>
-          <div style={{ width: '12px', height: '12px', backgroundColor: colors[0], borderRadius: '2px' }}></div>
-          <div style={{ width: '12px', height: '12px', backgroundColor: colors[1], borderRadius: '2px' }}></div>
-          <div style={{ width: '12px', height: '12px', backgroundColor: colors[2], borderRadius: '2px' }}></div>
-          <div style={{ width: '12px', height: '12px', backgroundColor: colors[3], borderRadius: '2px' }}></div>
-          <div style={{ width: '12px', height: '12px', backgroundColor: colors[4], borderRadius: '2px' }}></div>
+          <div style={{ width: '14px', height: '14px', backgroundColor: colors[0], border: '2px solid #000' }}></div>
+          <div style={{ width: '14px', height: '14px', backgroundColor: colors[1], border: '2px solid #000' }}></div>
+          <div style={{ width: '14px', height: '14px', backgroundColor: colors[2], border: '2px solid #000' }}></div>
+          <div style={{ width: '14px', height: '14px', backgroundColor: colors[3], border: '2px solid #000' }}></div>
+          <div style={{ width: '14px', height: '14px', backgroundColor: colors[4], border: '2px solid #000' }}></div>
           <span>More</span>
         </div>
       </div>
@@ -96,9 +99,6 @@ const ContributionGrid = ({ year, totalContributions, data }) => {
 };
 
 const GithubContributions = () => {
-  // Fungsi helper untuk generate mock data yang menyerupai pola screenshot
-  // Screenshot 2025: Banyak hijau di bulan Jul-Dec
-  // Screenshot 2026: Banyak hijau di bulan Jan-Apr
   const generateData = (year) => {
     const weeks = [];
     for (let i = 0; i < 52; i++) {
@@ -107,14 +107,12 @@ const GithubContributions = () => {
         let level = 0;
         
         if (year === 2025) {
-          // Pola untuk 2025 (lebih banyak kontribusi di paruh kedua tahun)
           if (i > 25 && Math.random() > 0.6) {
             level = Math.floor(Math.random() * 4) + 1;
           } else if (Math.random() > 0.95) {
             level = Math.floor(Math.random() * 2) + 1;
           }
         } else if (year === 2026) {
-          // Pola untuk 2026 (lebih banyak kontribusi di paruh pertama tahun)
           if (i < 20 && Math.random() > 0.5) {
             level = Math.floor(Math.random() * 4) + 1;
           } else if (Math.random() > 0.95) {
@@ -136,7 +134,6 @@ const GithubContributions = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Animate title
       gsap.fromTo('.github-title',
         { y: 50, opacity: 0 },
         {
@@ -151,14 +148,13 @@ const GithubContributions = () => {
         }
       );
 
-      // Animate the grids
       gsap.fromTo('.github-grid',
         { y: 100, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 1,
-          stagger: 0.3,
+          stagger: 0.2,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: containerRef.current,
@@ -172,16 +168,16 @@ const GithubContributions = () => {
   }, []);
 
   return (
-    <section id="github" className="section" ref={containerRef} style={{ paddingTop: '6rem', paddingBottom: '6rem' }}>
+    <section id="github" className="section" ref={containerRef} style={{ paddingTop: '6rem', paddingBottom: '6rem', backgroundColor: 'var(--bg-color)' }}>
       <div className="container">
         <h2 className="section-title github-title">GitHub Contributions</h2>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
           <div className="github-grid">
-            <ContributionGrid year="2026" totalContributions={185} data={data2026} />
+            <ContributionGrid year="2026" totalContributions={185} data={data2026} accentColor="var(--accent)" />
           </div>
           <div className="github-grid">
-            <ContributionGrid year="2025" totalContributions={193} data={data2025} />
+            <ContributionGrid year="2025" totalContributions={193} data={data2025} accentColor="var(--accent-2)" />
           </div>
         </div>
       </div>

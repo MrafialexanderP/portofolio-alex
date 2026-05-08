@@ -4,14 +4,16 @@ import About from './components/About';
 import Projects from './components/Projects';
 import GithubContributions from './components/GithubContributions';
 import Contact from './components/Contact';
+import Education from './components/Education';
 
 function BrutalistNav() {
   const [isOpen, setIsOpen] = useState(false);
   const items = [
     { label: 'About', href: '#about', color: 'var(--accent)' },
-    { label: 'Projects', href: '#projects', color: 'var(--accent-2)' },
-    { label: 'Github', href: '#github', color: 'var(--accent-3)' },
-    { label: 'Contact', href: '#contact', color: 'var(--accent-4)' }
+    { label: 'Education', href: '#education', color: 'var(--accent-2)' },
+    { label: 'Projects', href: '#projects', color: 'var(--accent-3)' },
+    { label: 'Github', href: '#github', color: 'var(--accent-4)' },
+    { label: 'Contact', href: '#contact', color: 'var(--accent)' }
   ];
 
   return (
@@ -187,6 +189,7 @@ function App() {
       <main style={{ paddingTop: '80px' }}>
         <Hero />
         <About />
+        <Education />
         <Projects />
         <GithubContributions />
         <Contact />

@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { FaReact, FaJs, FaHtml5, FaPython, FaUnity } from 'react-icons/fa';
 import { SiTypescript, SiVite, SiTailwindcss, SiBlender } from 'react-icons/si';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const About = () => {
+  const containerRef = useRef(null);
+  const marqueeRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(marqueeRef.current,
+        { attr: { startOffset: -1000 } },
+        {
+          attr: { startOffset: 0 },
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1
+          }
+        }
+      );
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
   const skills = [
     { name: 'JavaScript', icon: <FaJs size={48} color="#000" />, bg: '#F7DF1E' },
     { name: 'React', icon: <FaReact size={48} color="#000" />, bg: '#61DAFB' },
@@ -16,24 +42,35 @@ const About = () => {
   ];
 
   return (
-    <div id="about" style={{ 
-      borderTop: 'var(--border-width) solid var(--border-color)',
+    <div id="about" ref={containerRef} style={{ 
       borderBottom: 'var(--border-width) solid var(--border-color)',
       backgroundColor: 'var(--bg-surface)'
     }}>
-      {/* Brutalist Section Divider with Scrolling Text */}
+      {/* Wave Transition Section Divider */}
       <div style={{ 
         width: '100%', 
         overflow: 'hidden', 
-        backgroundColor: 'var(--accent)', 
-        borderBottom: 'var(--border-width) solid var(--border-color)',
-        padding: '0.75rem 0',
-        whiteSpace: 'nowrap',
-        display: 'flex'
+        backgroundColor: 'var(--bg-surface)', 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative'
       }}>
-        <div className="marquee-text" style={{ display: 'inline-block', fontWeight: 900, fontSize: '1.5rem', textTransform: 'uppercase' }}>
-          &nbsp;GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS •
-        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250" preserveAspectRatio="none" style={{ width: '100%', minWidth: '1000px', height: '180px', display: 'block' }}>
+          {/* Top filled area with a wave at the bottom */}
+          <path fill="var(--accent-4)" stroke="var(--border-color)" strokeWidth="6" strokeLinecap="square" 
+            d="M-1440,150 C-1120,50 -1020,250 -720,150 C-420,50 -320,250 0,150 C320,50 420,250 720,150 C1020,50 1120,250 1440,150 C1760,50 1860,250 2160,150 C2460,50 2560,250 2880,150 L2880,-100 L-1440,-100 Z" />
+          
+          {/* Invisible path for the text to follow */}
+          <path id="wavyPath" fill="none" stroke="none" 
+            d="M-1440,150 C-1120,50 -1020,250 -720,150 C-420,50 -320,250 0,150 C320,50 420,250 720,150 C1020,50 1120,250 1440,150 C1760,50 1860,250 2160,150 C2460,50 2560,250 2880,150" />
+            
+          <text fill="#ffffff" fontSize="42" fontWeight="900" style={{ fontFamily: 'Georgia, serif', textTransform: 'uppercase', letterSpacing: '4px', textShadow: '2px 2px 0px #000' }} dy="-20">
+            <textPath href="#wavyPath" startOffset="0" ref={marqueeRef}>
+              &nbsp;GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS • GET TO KNOW MORE ABOUT WHO I AM AND MY SKILLS •
+            </textPath>
+          </text>
+        </svg>
       </div>
 
       <section className="section" style={{ paddingTop: '4rem', paddingBottom: '4rem', minHeight: 'auto' }}>
@@ -99,17 +136,10 @@ const About = () => {
       </section>
 
       <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .marquee-text {
-          animation: marquee 15s linear infinite;
-        }
         .about-title { font-size: 2.5rem; }
         @media (max-width: 768px) {
           .about-title { font-size: 2rem; }
-          .marquee-text { font-size: 1.2rem !important; }
+          .scroll-marquee-text { font-size: 1.2rem !important; }
         }
       `}</style>
     </div>

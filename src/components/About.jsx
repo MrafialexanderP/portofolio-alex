@@ -25,6 +25,28 @@ const About = () => {
           }
         }
       );
+
+      // Section Reveal Animations
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.about-content-wrapper',
+          start: 'top 80%',
+          once: true
+        }
+      });
+
+      tl.from('.about-bio', {
+        x: -100,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
+      })
+      .from('.about-skills', {
+        x: 100,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
+      }, '-=0.6');
     }, containerRef);
     return () => ctx.revert();
   }, []);
@@ -74,9 +96,9 @@ const About = () => {
       </div>
 
       <section className="section" style={{ paddingTop: '4rem', paddingBottom: '4rem', minHeight: 'auto' }}>
-        <div className="container">
+        <div className="container about-content-wrapper" style={{ overflow: 'hidden' }}>
           <div style={{ display: 'flex', gap: '4rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1 1 300px' }} className="brutal-card">
+            <div style={{ flex: '1 1 300px' }} className="brutal-card about-bio">
               <div style={{ display: 'inline-block', backgroundColor: 'var(--accent-3)', border: '2px solid #000', padding: '0.2rem 0.5rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>
                 BIO
               </div>
@@ -89,7 +111,7 @@ const About = () => {
               </p>
             </div>
 
-            <div style={{ flex: '1 1 300px' }}>
+            <div style={{ flex: '1 1 300px' }} className="about-skills">
               <div style={{ display: 'inline-block', backgroundColor: 'var(--accent-2)', border: '2px solid #000', padding: '0.2rem 0.5rem', fontWeight: 800, marginBottom: '1rem' }}>
                 TECH STACK
               </div>

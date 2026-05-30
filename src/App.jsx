@@ -1,4 +1,10 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import Lenis from '@studio-freight/lenis';
+
+import PillNav from './components/PillNav';
 import Hero from './components/Hero';
 import About from './components/About';
 import Projects from './components/Projects';
@@ -6,187 +12,120 @@ import GithubContributions from './components/GithubContributions';
 import Contact from './components/Contact';
 import Education from './components/Education';
 
-function BrutalistNav() {
-  const [isOpen, setIsOpen] = useState(false);
-  const items = [
-    { label: 'About', href: '#about', color: 'var(--accent)' },
-    { label: 'Education', href: '#education', color: 'var(--accent-2)' },
-    { label: 'Projects', href: '#projects', color: 'var(--accent-3)' },
-    { label: 'Github', href: '#github', color: 'var(--accent-4)' },
-    { label: 'Contact', href: '#contact', color: 'var(--accent)' }
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+function App() {
+  const containerRef = useRef(null);
+  const [activeSection, setActiveSection] = useState('#hero');
+
+  useLayoutEffect(() => {
+    // Lenis Smooth Scroll Setup
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    
+    gsap.ticker.lagSmoothing(0, 0);
+
+    // Setup active state tracking for PillNav (Scroll Spy)
+    const sections = ['#hero', '#about', '#education', '#projects', '#github', '#contact'];
+    
+    sections.forEach((id) => {
+      ScrollTrigger.create({
+        trigger: id,
+        start: 'top 40%',
+        end: 'bottom 40%',
+        onEnter: () => setActiveSection(id),
+        onEnterBack: () => setActiveSection(id),
+      });
+    });
+
+    // Sticky header animation
+    ScrollTrigger.create({
+      start: 'top -80',
+      end: 999999,
+      onToggle: (self) => {
+        if (self.isActive) {
+          gsap.to('#main-header', { padding: '0.5rem 0', duration: 0.3, ease: 'power2.out' });
+        } else {
+          gsap.to('#main-header', { padding: '1.5rem 0', duration: 0.3, ease: 'power2.out' });
+        }
+      }
+    });
+
+    // Floating shapes parallax globally
+    const shapes = document.querySelectorAll('.global-shape');
+    shapes.forEach((shape, i) => {
+      gsap.to(shape, {
+        y: (i + 1) * 100,
+        rotation: (i % 2 === 0 ? 1 : -1) * 360,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: document.body,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        }
+      });
+    });
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(lenis.raf);
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
+  const navItems = [
+    { label: 'Hero', href: '#hero' },
+    { label: 'About', href: '#about' },
+    { label: 'Education', href: '#education' },
+    { label: 'Projects', href: '#projects' },
+    { label: 'Github', href: '#github' },
+    { label: 'Contact', href: '#contact' }
   ];
 
   return (
-    <header style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      zIndex: 1000,
-      background: 'var(--bg-surface)',
-      borderBottom: 'var(--border-width) solid var(--border-color)',
-      padding: '1rem 0'
-    }}>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 10 }}>
-        <a href="#hero" style={{
-          textDecoration: 'none',
-          color: 'var(--text-primary)',
-          fontSize: '1.5rem',
-          fontWeight: 900,
-          letterSpacing: '-1px',
-          textTransform: 'uppercase',
-          border: 'var(--border-width) solid var(--border-color)',
-          padding: '0.25rem 0.75rem',
-          background: 'var(--accent-3)',
-          boxShadow: '3px 3px 0px 0px var(--border-color)',
-          transition: 'transform 0.1s, box-shadow 0.1s',
-          display: 'inline-block'
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'translate(-2px, -2px)';
-          e.currentTarget.style.boxShadow = '5px 5px 0px 0px var(--border-color)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'translate(0, 0)';
-          e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--border-color)';
-        }}>
-          RA
-        </a>
+    <div ref={containerRef} className="app-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Global Decorative Floating Shapes */}
+      <div className="global-shape" style={{ position: 'absolute', top: '10%', left: '5%', width: '40px', height: '40px', background: 'var(--accent)', border: 'var(--border-width) solid var(--border-color)', boxShadow: '4px 4px 0 var(--border-color)', zIndex: 0 }}></div>
+      <div className="global-shape" style={{ position: 'absolute', top: '30%', right: '10%', width: '30px', height: '30px', borderRadius: '50%', background: 'var(--accent-2)', border: 'var(--border-width) solid var(--border-color)', boxShadow: '4px 4px 0 var(--border-color)', zIndex: 0 }}></div>
+      <div className="global-shape" style={{ position: 'absolute', top: '60%', left: '8%', width: '45px', height: '45px', background: 'var(--accent-4)', border: 'var(--border-width) solid var(--border-color)', boxShadow: '4px 4px 0 var(--border-color)', clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)', zIndex: 0 }}></div>
+      <div className="global-shape" style={{ position: 'absolute', top: '85%', right: '5%', width: '50px', height: '50px', background: 'var(--accent-3)', border: 'var(--border-width) solid var(--border-color)', boxShadow: '4px 4px 0 var(--border-color)', zIndex: 0 }}></div>
 
-        {/* Desktop Nav */}
-        <nav style={{ display: 'flex', gap: '1rem' }} className="desktop-nav">
-          {items.map((item) => (
-            <a key={item.href} href={item.href} style={{
-              textDecoration: 'none',
-              color: 'var(--text-primary)',
-              fontWeight: 800,
-              fontSize: '1rem',
-              padding: '0.5rem 1rem',
-              border: 'var(--border-width) solid var(--border-color)',
-              background: '#fff',
-              boxShadow: '3px 3px 0px 0px var(--border-color)',
-              transition: 'transform 0.1s, box-shadow 0.1s',
-              textTransform: 'uppercase'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = item.color;
-              e.currentTarget.style.transform = 'translate(-2px, -2px)';
-              e.currentTarget.style.boxShadow = '5px 5px 0px 0px var(--border-color)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#fff';
-              e.currentTarget.style.transform = 'translate(0, 0)';
-              e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--border-color)';
-            }}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
+      <header id="main-header" style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        zIndex: 1000,
+        background: 'transparent',
+        padding: '1.5rem 0'
+      }}>
+        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+            <PillNav 
+              items={navItems} 
+              activeHref={activeSection}
+            />
+          </div>
+        </div>
+      </header>
 
-        {/* Mobile Toggle */}
-        <button 
-          className={`mobile-toggle ${isOpen ? 'active' : ''}`} 
-          onClick={() => setIsOpen(!isOpen)} 
-          style={{
-            display: 'none',
-            background: isOpen ? 'var(--accent-2)' : 'var(--accent)',
-            border: 'var(--border-width) solid var(--border-color)',
-            padding: '0.5rem 1rem',
-            fontWeight: 900,
-            cursor: 'pointer',
-            boxShadow: isOpen ? '1px 1px 0px 0px var(--border-color)' : '4px 4px 0px 0px var(--border-color)',
-            transform: isOpen ? 'translate(3px, 3px)' : 'translate(0, 0)',
-            transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-          }}
-        >
-          {isOpen ? 'CLOSE' : 'MENU'}
-        </button>
-      </div>
-
-      {/* Mobile Nav */}
-      <div className={`mobile-nav-container ${isOpen ? 'open' : ''}`}>
-        {items.map((item, index) => (
-          <a 
-            key={item.href} 
-            href={item.href} 
-            onClick={() => setIsOpen(false)} 
-            className={`mobile-nav-link ${isOpen ? 'show' : ''}`}
-            style={{
-              background: item.color,
-              transitionDelay: isOpen ? `${index * 0.1}s` : '0s' // Stagger in, hide immediately
-            }}
-          >
-            {item.label}
-          </a>
-        ))}
-      </div>
-      
-      <style>{`
-        .mobile-nav-container {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          width: 100%;
-          background: var(--bg-surface);
-          border-bottom: var(--border-width) solid var(--border-color);
-          display: flex;
-          flex-direction: column;
-          padding: 1.5rem;
-          gap: 1rem;
-          transform: translateY(-100%);
-          opacity: 0;
-          visibility: hidden;
-          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          z-index: 5;
-        }
-        
-        .mobile-nav-container.open {
-          transform: translateY(0);
-          opacity: 1;
-          visibility: visible;
-          box-shadow: 0px 10px 0px 0px var(--border-color);
-        }
-
-        .mobile-nav-link {
-          text-decoration: none;
-          color: var(--text-primary);
-          font-weight: 900;
-          font-size: 1.5rem;
-          padding: 1rem;
-          border: var(--border-width) solid var(--border-color);
-          text-align: center;
-          text-transform: uppercase;
-          opacity: 0;
-          transform: translateX(-50px);
-          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          box-shadow: 4px 4px 0px 0px var(--border-color);
-        }
-
-        .mobile-nav-link.show {
-          opacity: 1;
-          transform: translateX(0);
-        }
-        
-        .mobile-nav-link:active {
-          transform: translate(2px, 2px) !important;
-          box-shadow: 2px 2px 0px 0px var(--border-color) !important;
-        }
-
-        @media (max-width: 768px) {
-          .desktop-nav { display: none !important; }
-          .mobile-toggle { display: block !important; }
-        }
-      `}</style>
-    </header>
-  );
-}
-
-function App() {
-  return (
-    <>
-      <BrutalistNav />
-
-      <main style={{ paddingTop: '80px' }}>
+      <main style={{ paddingTop: '80px', position: 'relative', zIndex: 1 }}>
         <Hero />
         <About />
         <Education />
@@ -195,12 +134,12 @@ function App() {
         <Contact />
       </main>
 
-      <footer>
+      <footer style={{ position: 'relative', zIndex: 1 }}>
         <div className="container">
           <p>&copy; {new Date().getFullYear()} Rafi Alexander. All rights reserved.</p>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
 

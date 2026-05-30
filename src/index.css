@@ -12,7 +12,7 @@
   --accent-3: #23A094;
   --accent-4: #90A8ED;
   --border-color: #000000;
-  --border-width: 3px;
+  --border-width: 4px;
   
   --transition-normal: 0.15s ease-out;
   --font-main: 'Inter', sans-serif;
@@ -25,7 +25,24 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Lenis handles smooth scrolling, so we remove CSS smooth scroll */
+}
+
+/* Lenis Recommended Styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 body {

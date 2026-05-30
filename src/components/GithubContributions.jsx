@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -17,10 +17,59 @@ const ContributionGrid = ({ year, totalContributions, data, accentColor }) => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const days = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
+  const gridRef = useRef(null);
+  const countRef = useRef(null);
+
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      // Counter Animation
+      gsap.fromTo(countRef.current, 
+        { innerHTML: 0 }, 
+        { 
+          innerHTML: totalContributions,
+          duration: 2, 
+          ease: "power2.out", 
+          snap: { innerHTML: 1 },
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: "top 85%",
+            once: true
+          }
+        }
+      );
+
+      // Heatmap Reveal Stagger
+      gsap.fromTo('.heatmap-square',
+        { scale: 0, opacity: 0, rotation: -10 },
+        {
+          scale: 1,
+          opacity: 1,
+          rotation: 0,
+          duration: 0.4,
+          stagger: {
+            amount: 1,
+            from: "random"
+          },
+          ease: "back.out(2)",
+          scrollTrigger: {
+            trigger: '.heatmap-grid',
+            start: "top 80%",
+            once: true
+          }
+        }
+      );
+
+    }, gridRef);
+
+    return () => ctx.revert();
+  }, [totalContributions]);
+
   return (
-    <div className="brutal-card" style={{ marginBottom: '2rem', width: '100%', backgroundColor: accentColor }}>
+    <div ref={gridRef} className="brutal-card" style={{ marginBottom: '2rem', width: '100%', backgroundColor: accentColor }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: 'var(--border-width) solid var(--border-color)', paddingBottom: '0.5rem' }}>
-        <h3 style={{ color: '#000', fontWeight: 900, fontSize: '1.5rem', textTransform: 'uppercase' }}>{totalContributions} contributions in {year}</h3>
+        <h3 style={{ color: '#000', fontWeight: 900, fontSize: '1.5rem', textTransform: 'uppercase' }}>
+          <span ref={countRef}>0</span> contributions in {year}
+        </h3>
       </div>
       
       <div style={{ 
@@ -41,7 +90,7 @@ const ContributionGrid = ({ year, totalContributions, data, accentColor }) => {
           </div>
 
           {/* Grid */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+          <div className="heatmap-grid" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
             {/* Months row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '0.5rem', paddingRight: '2rem' }}>
               {months.map((month, i) => (
@@ -56,12 +105,13 @@ const ContributionGrid = ({ year, totalContributions, data, accentColor }) => {
                   {week.map((level, dayIndex) => (
                     <div 
                       key={dayIndex} 
+                      className="heatmap-square"
                       style={{ 
                         width: '14px', 
                         height: '14px', 
                         backgroundColor: colors[level] || colors[0], 
                         border: '2px solid #000',
-                        transition: 'transform 0.1s',
+                        transition: 'transform 0.1s, box-shadow 0.1s',
                         cursor: 'pointer'
                       }}
                       onMouseEnter={(e) => {
@@ -132,8 +182,8 @@ const GithubContributions = () => {
 
   const containerRef = useRef(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
       gsap.fromTo('.github-title',
         { y: 50, opacity: 0 },
         {
@@ -144,11 +194,12 @@ const GithubContributions = () => {
           scrollTrigger: {
             trigger: '.github-title',
             start: 'top 80%',
+            once: true
           }
         }
       );
 
-      gsap.fromTo('.github-grid',
+      gsap.fromTo('.github-grid-container',
         { y: 100, opacity: 0 },
         {
           y: 0,
@@ -159,6 +210,7 @@ const GithubContributions = () => {
           scrollTrigger: {
             trigger: containerRef.current,
             start: 'top 75%',
+            once: true
           }
         }
       );
@@ -173,10 +225,10 @@ const GithubContributions = () => {
         <h2 className="section-title github-title">GitHub Contributions</h2>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-          <div className="github-grid">
+          <div className="github-grid-container">
             <ContributionGrid year="2026" totalContributions={185} data={data2026} accentColor="var(--accent)" />
           </div>
-          <div className="github-grid">
+          <div className="github-grid-container">
             <ContributionGrid year="2025" totalContributions={193} data={data2025} accentColor="var(--accent-2)" />
           </div>
         </div>

@@ -1,21 +1,88 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { ArrowRight, Mail } from 'lucide-react';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
-  return (
-    <section id="hero" className="section" style={{ minHeight: 'calc(100vh - 80px)', paddingTop: '40px', backgroundColor: 'var(--accent-4)' }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4rem', flexWrap: 'wrap' }}>
+  const containerRef = useRef(null);
 
-        <div style={{ flex: '1 1 300px' }} className="animate-fade-in brutal-card hero-content">
-          <div style={{ 
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      // Timeline for entry animations
+      const tl = gsap.timeline();
+
+      // Badge
+      tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' });
+
+      // Title (Name)
+      tl.from('.hero-title', { y: 50, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4');
+
+      // Subtitle & Desc (Tagline) stagger
+      tl.from(['.hero-subtitle', '.hero-desc', '.hero-actions'], {
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.15,
+        ease: 'power3.out'
+      }, '-=0.5');
+
+      // Image Box
+      tl.fromTo('.hero-img-box', 
+        { scale: 0.8, opacity: 0, rotation: -5 },
+        { scale: 1, opacity: 1, rotation: 0, duration: 1, ease: 'back.out(1.5)' },
+        '-=0.8'
+      );
+
+      // Image parallax effect on scroll
+      gsap.to('.hero-img-box', {
+        y: 100,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true
+        }
+      });
+      
+      // Floating bg shapes in hero
+      gsap.to('.hero-bg-shape', {
+        y: -150,
+        rotation: 45,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 1.5
+        }
+      });
+
+    }, containerRef);
+    
+    return () => ctx.revert(); // cleanup
+  }, []);
+
+  return (
+    <section ref={containerRef} id="hero" className="section relative overflow-hidden" style={{ minHeight: 'calc(100vh - 80px)', paddingTop: '40px', backgroundColor: 'var(--accent-4)' }}>
+      {/* Decorative background shapes specific to hero */}
+      <div className="hero-bg-shape absolute" style={{ top: '20%', left: '-5%', width: '150px', height: '150px', background: 'var(--accent-2)', border: 'var(--border-width) solid var(--border-color)', boxShadow: '8px 8px 0 var(--border-color)', zIndex: 0, opacity: 0.5 }}></div>
+      <div className="hero-bg-shape absolute" style={{ bottom: '10%', right: '-5%', width: '200px', height: '200px', borderRadius: '50%', background: 'var(--accent)', border: 'var(--border-width) solid var(--border-color)', boxShadow: '8px 8px 0 var(--border-color)', zIndex: 0, opacity: 0.5 }}></div>
+
+      <div className="container relative z-10" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4rem', flexWrap: 'wrap' }}>
+
+        <div style={{ flex: '1 1 300px' }} className="hero-content">
+          <div className="hero-badge" style={{ 
             display: 'inline-block',
             backgroundColor: 'var(--accent)',
             border: 'var(--border-width) solid var(--border-color)',
             padding: '0.25rem 0.75rem',
             fontWeight: 900,
             marginBottom: '1rem',
-            boxShadow: '3px 3px 0px 0px var(--border-color)',
+            boxShadow: '4px 4px 0px 0px var(--border-color)',
             textTransform: 'uppercase'
           }}>
             Hello, I'm
@@ -30,8 +97,11 @@ const Hero = () => {
             I build interactive, responsive, and elegant digital experiences. Specializing in modern frontend technologies to bring creative ideas to life.
           </p>
 
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <a href="#projects" className="btn-primary" style={{ backgroundColor: 'var(--accent-2)' }}>
+          <div className="hero-actions" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <a href="#projects" className="btn-primary" style={{ backgroundColor: 'var(--accent-2)' }} onClick={(e) => {
+              e.preventDefault();
+              gsap.to(window, { duration: 1, scrollTo: '#projects', ease: 'power3.inOut' });
+            }}>
               View My Work <ArrowRight size={20} strokeWidth={3} />
             </a>
             <div style={{ display: 'flex', gap: '1rem' }}>
@@ -48,7 +118,7 @@ const Hero = () => {
           </div>
         </div>
 
-        <div style={{ flex: '1 1 300px', display: 'flex', justifyContent: 'center' }} className="animate-fade-in delay-200 hero-img-wrapper">
+        <div style={{ flex: '1 1 300px', display: 'flex', justifyContent: 'center' }} className="hero-img-wrapper">
           <div className="hero-img-box" style={{
             backgroundColor: 'var(--accent)',
             border: 'var(--border-width) solid var(--border-color)',
@@ -91,7 +161,7 @@ const Hero = () => {
         .hero-title { font-size: 4.5rem; }
         .hero-subtitle { font-size: 2rem; }
         .hero-desc { font-size: 1.125rem; }
-        .hero-img-box { width: 350px; height: 400px; }
+        .hero-img-box { width: 350px; height: 400px; transform-origin: center; }
 
         @media (max-width: 768px) {
           .hero-title { font-size: 2.5rem; letter-spacing: -1px; }

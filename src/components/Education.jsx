@@ -30,25 +30,6 @@ const Education = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Fade in and fade out on scroll
-      gsap.utils.toArray('.edu-card').forEach((card) => {
-        gsap.fromTo(card, 
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1, 
-            y: 0,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 90%',
-              end: 'bottom 10%',
-              toggleActions: 'play reverse play reverse'
-            }
-          }
-        );
-      });
-
       gsap.fromTo('.edu-title',
         { opacity: 0, x: -50 },
         {
@@ -59,8 +40,24 @@ const Education = () => {
           scrollTrigger: {
             trigger: '.edu-title',
             start: 'top 90%',
-            end: 'bottom 10%',
-            toggleActions: 'play reverse play reverse'
+            once: true
+          }
+        }
+      );
+
+      gsap.fromTo('.edu-card', 
+        { opacity: 0, scale: 0.8, rotation: (i) => i % 2 === 0 ? -5 : 5 },
+        {
+          opacity: 1, 
+          scale: 1,
+          rotation: (i) => i % 2 === 0 ? 1.5 : -1.5,
+          duration: 0.8,
+          ease: 'back.out(1.7)',
+          stagger: 0.2,
+          scrollTrigger: {
+            trigger: '.edu-container',
+            start: 'top 80%',
+            once: true
           }
         }
       );
@@ -80,7 +77,7 @@ const Education = () => {
       <div className="container">
         <h2 className="section-title edu-title" style={{ color: 'var(--text-primary)', marginBottom: '3rem' }}>Education Journey</h2>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem', maxWidth: '800px', margin: '0 auto' }}>
+        <div className="edu-container" style={{ display: 'flex', flexDirection: 'column', gap: '4rem', maxWidth: '800px', margin: '0 auto' }}>
           {educationData.map((edu, index) => (
             <div key={index} className="edu-card brutal-card" style={{ 
               backgroundColor: edu.color,

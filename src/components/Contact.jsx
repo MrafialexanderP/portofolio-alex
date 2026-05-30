@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { Mail, MapPin, Send } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -36,19 +36,21 @@ const Contact = () => {
     }, 3000);
   };
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Animate title
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      // Animate title (enlarge)
       gsap.fromTo('.contact-title',
-        { y: 50, opacity: 0 },
+        { scale: 0.5, opacity: 0, y: 50 },
         {
-          y: 0,
+          scale: 1,
           opacity: 1,
-          duration: 0.8,
-          ease: 'power3.out',
+          y: 0,
+          duration: 1,
+          ease: 'back.out(1.5)',
           scrollTrigger: {
             trigger: '.contact-title',
             start: 'top 85%',
+            once: true
           }
         }
       );
@@ -64,21 +66,24 @@ const Contact = () => {
           scrollTrigger: {
             trigger: containerRef.current,
             start: 'top 75%',
+            once: true
           }
         }
       );
 
-      // Animate right panel (form)
-      gsap.fromTo('.contact-form',
+      // Animate right panel (form fields stagger)
+      gsap.fromTo('.contact-form-group',
         { x: 50, opacity: 0 },
         {
           x: 0,
           opacity: 1,
-          duration: 0.8,
+          duration: 0.6,
+          stagger: 0.15,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: containerRef.current,
             start: 'top 75%',
+            once: true
           }
         }
       );
@@ -125,7 +130,7 @@ const Contact = () => {
 
           <div style={{ flex: '1 1 400px' }} className="brutal-card contact-form">
             <form style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }} onSubmit={handleSubmit}>
-              <div>
+              <div className="contact-form-group">
                 <label htmlFor="name" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 800, textTransform: 'uppercase' }}>Name</label>
                 <input
                   type="text"
@@ -149,7 +154,7 @@ const Contact = () => {
                   onBlur={(e) => e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--border-color)'}
                 />
               </div>
-              <div>
+              <div className="contact-form-group">
                 <label htmlFor="email" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 800, textTransform: 'uppercase' }}>Email</label>
                 <input
                   type="email"
@@ -173,7 +178,7 @@ const Contact = () => {
                   onBlur={(e) => e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--border-color)'}
                 />
               </div>
-              <div>
+              <div className="contact-form-group">
                 <label htmlFor="message" style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 800, textTransform: 'uppercase' }}>Message</label>
                 <textarea
                   id="message"
@@ -198,16 +203,18 @@ const Contact = () => {
                   onBlur={(e) => e.currentTarget.style.boxShadow = '4px 4px 0px 0px var(--border-color)'}
                 ></textarea>
               </div>
-              <button 
-                type="submit" 
-                className="btn-primary" 
-                style={{ justifyContent: 'center', opacity: isSubmitting ? 0.7 : 1, width: '100%', marginTop: '1rem', padding: '1rem' }}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'SENDING...' : (
-                  <>SEND MESSAGE <Send size={20} strokeWidth={3} /></>
-                )}
-              </button>
+              <div className="contact-form-group">
+                <button 
+                  type="submit" 
+                  className="btn-primary form-submit-btn" 
+                  style={{ justifyContent: 'center', opacity: isSubmitting ? 0.7 : 1, width: '100%', marginTop: '1rem', padding: '1rem', transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)' }}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'SENDING...' : (
+                    <>SEND MESSAGE <Send size={20} strokeWidth={3} /></>
+                  )}
+                </button>
+              </div>
               
               {submitStatus === 'success' && (
                 <div style={{ backgroundColor: '#4ade80', border: 'var(--border-width) solid #000', padding: '1rem', marginTop: '1rem', fontWeight: 800, textAlign: 'center', boxShadow: '4px 4px 0px 0px #000' }}>
@@ -224,6 +231,11 @@ const Contact = () => {
 
         </div>
       </div>
+      <style>{`
+        .form-submit-btn:hover {
+          transform: scale(1.05) translate(2px, 2px) !important;
+        }
+      `}</style>
     </section>
   );
 };

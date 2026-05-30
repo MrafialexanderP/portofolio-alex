@@ -99,30 +99,28 @@ const Projects = () => {
       );
 
       // Horizontal Scroll Logic
-      const mm = gsap.matchMedia();
-      
-      mm.add("(min-width: 1024px)", () => {
-        // Calculate dynamic width based on the actual scrollWidth of the horizontal container
-        const getScrollAmount = () => {
-          let projectsWidth = wrapperRef.current.scrollWidth;
-          // Calculate the total distance to move the wrapper so the last item touches the right edge
-          return -(projectsWidth - window.innerWidth + window.innerWidth * 0.1); 
-        };
+      // Calculate dynamic width based on the actual scrollWidth of the horizontal container
+      const getScrollAmount = () => {
+        let projectsWidth = wrapperRef.current.scrollWidth;
+        // Calculate the total distance to move the wrapper so the last item touches the right edge
+        // Adding a bit of buffer
+        let paddingBuffer = window.innerWidth < 768 ? 50 : window.innerWidth * 0.1;
+        return -(projectsWidth - window.innerWidth + paddingBuffer); 
+      };
 
-        const tween = gsap.to(wrapperRef.current, {
-          x: getScrollAmount,
-          ease: "none"
-        });
+      const tween = gsap.to(wrapperRef.current, {
+        x: getScrollAmount,
+        ease: "none"
+      });
 
-        ScrollTrigger.create({
-          trigger: containerRef.current,
-          start: "top top",
-          end: () => `+=${wrapperRef.current.scrollWidth}`, // Scroll duration equals width
-          pin: true,
-          animation: tween,
-          scrub: 1,
-          invalidateOnRefresh: true,
-        });
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: "top top",
+        end: () => `+=${wrapperRef.current.scrollWidth}`, // Scroll duration equals width
+        pin: true,
+        animation: tween,
+        scrub: 1,
+        invalidateOnRefresh: true,
       });
 
     }, containerRef);
@@ -136,8 +134,8 @@ const Projects = () => {
         <h2 className="section-title projects-title">Featured Projects</h2>
       </div>
 
-      <div style={{ width: '100%', paddingLeft: 'max(2rem, calc((100vw - 1200px) / 2))', overflowX: 'hidden' }}>
-        <div ref={wrapperRef} className="projects-wrapper flex lg:flex-row flex-col gap-10 lg:w-max w-full py-8 pr-[10vw]">
+      <div style={{ width: '100%', paddingLeft: 'max(1rem, calc((100vw - 1200px) / 2))', overflowX: 'hidden' }}>
+        <div ref={wrapperRef} className="projects-wrapper flex flex-row gap-6 md:gap-10 w-max py-8 pr-[10vw]">
           {projects.map((project, index) => {
             const cardColor = colors[index % colors.length];
             return (
@@ -268,15 +266,10 @@ const Projects = () => {
         }
 
         @media (max-width: 1024px) {
-          .projects-wrapper {
-            padding: 1rem 0;
-            overflow-x: hidden;
-            width: 100% !important;
-          }
           .project-card {
-            max-width: 100% !important;
-            height: auto !important;
-            min-height: 500px;
+            max-width: 85vw !important;
+            min-width: 85vw !important;
+            height: 450px !important;
           }
         }
       `}</style>

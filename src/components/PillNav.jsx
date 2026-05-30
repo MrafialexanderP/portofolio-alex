@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useEffect, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useEffect, useCallback, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
@@ -8,59 +8,57 @@ const PillNav = ({ items, activeHref }) => {
   const navRef = useRef(null);
   const indicatorRef = useRef(null);
   const pillRefs = useRef([]);
+  
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isOpen, setIsOpen] = useState(false);
+  const mobileMenuRef = useRef(null);
 
-  // Move indicator to the active pill's position
+  // Handle Resize for Mobile Toggle
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Desktop: Move indicator to the active pill's position
   const moveIndicator = useCallback(() => {
+    if (isMobile) return;
     const activeIndex = items.findIndex(item => item.href === activeHref);
     if (activeIndex === -1) return;
 
     const activePill = pillRefs.current[activeIndex];
-    const nav = navRef.current;
     const indicator = indicatorRef.current;
 
-    if (!activePill || !nav || !indicator) return;
+    if (!activePill || !indicator) return;
 
-    const navRect = nav.getBoundingClientRect();
-    const pillRect = activePill.getBoundingClientRect();
-
-    const left = pillRect.left - navRect.left;
-    const width = pillRect.width;
-    const height = pillRect.height;
-
+    // Use offsetLeft instead of getBoundingClientRect for stable positioning
     gsap.to(indicator, {
-      x: left,
-      width: width,
-      height: height,
+      x: activePill.offsetLeft,
+      width: activePill.offsetWidth,
+      height: activePill.offsetHeight,
       duration: 0.4,
       ease: 'power3.out',
       overwrite: true,
     });
+  }, [activeHref, items, isMobile]);
 
-    // Scroll the active pill into view inside the nav (for mobile overflow)
-    activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }, [activeHref, items]);
-
-  // Position indicator on mount and when activeHref changes
+  // Desktop: Position indicator on mount
   useLayoutEffect(() => {
-    // On first render, set indicator instantly (no animation)
+    if (isMobile) return;
     const activeIndex = items.findIndex(item => item.href === activeHref);
     if (activeIndex === -1) return;
 
     const activePill = pillRefs.current[activeIndex];
-    const nav = navRef.current;
     const indicator = indicatorRef.current;
 
-    if (!activePill || !nav || !indicator) return;
-
-    const navRect = nav.getBoundingClientRect();
-    const pillRect = activePill.getBoundingClientRect();
+    if (!activePill || !indicator) return;
 
     gsap.set(indicator, {
-      x: pillRect.left - navRect.left,
-      width: pillRect.width,
-      height: pillRect.height,
+      x: activePill.offsetLeft,
+      width: activePill.offsetWidth,
+      height: activePill.offsetHeight,
     });
-  }, []); // Only on mount
+  }, [isMobile]); // Re-run when switching back to desktop
 
   // Animate indicator when activeHref changes
   useEffect(() => {
@@ -78,9 +76,108 @@ const PillNav = ({ items, activeHref }) => {
     if (href.startsWith('#')) {
       e.preventDefault();
       gsap.to(window, { duration: 1, scrollTo: { y: href, offsetY: 80 }, ease: 'power3.inOut' });
+      if (isMobile) setIsOpen(false);
     }
   };
 
+  // Mobile Menu Animation
+  useEffect(() => {
+    const menu = mobileMenuRef.current;
+    if (!menu) return;
+
+    if (isOpen) {
+      // Get the natural height first
+      gsap.set(menu, { display: 'flex', height: 'auto' });
+      const fullHeight = menu.scrollHeight;
+      gsap.fromTo(menu,
+        { height: 0 },
+        { height: fullHeight, duration: 0.4, ease: 'power3.out' }
+      );
+    } else {
+      gsap.to(menu, {
+        height: 0,
+        duration: 0.3,
+        ease: 'power3.in',
+        onComplete: () => {
+          gsap.set(menu, { display: 'none' });
+        }
+      });
+    }
+  }, [isOpen]);
+
+  // Mobile Layout (Burger Menu)
+  if (isMobile) {
+    return (
+      <div style={{ position: 'relative', width: '100%', padding: '0 1rem', zIndex: 1000 }}>
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: isOpen ? '#000' : '#fff',
+            color: isOpen ? '#fff' : '#000',
+            border: 'var(--border-width) solid var(--border-color)',
+            boxShadow: '4px 4px 0px 0px var(--border-color)',
+            padding: '0.75rem 1.5rem',
+            fontSize: '1.2rem',
+            fontWeight: 900,
+            textTransform: 'uppercase',
+            cursor: 'pointer',
+            transition: 'background 0.2s, color 0.2s'
+          }}
+        >
+          <span>MENU</span>
+          <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>{isOpen ? '✕' : '☰'}</span>
+        </button>
+
+        <div 
+          ref={mobileMenuRef}
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 8px)',
+            left: '1rem',
+            right: '1rem',
+            background: 'var(--accent-2)',
+            border: 'var(--border-width) solid var(--border-color)',
+            boxShadow: '6px 6px 0px 0px var(--border-color)',
+            height: 0,
+            overflow: 'hidden',
+            display: 'none',
+            flexDirection: 'column',
+            zIndex: 999
+          }}
+        >
+          {items.map((item, i) => {
+            const isActive = activeHref === item.href;
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={(e) => handleLinkClick(e, item.href)}
+                style={{
+                  padding: '1rem 1.5rem',
+                  textDecoration: 'none',
+                  color: isActive ? '#fff' : '#000',
+                  background: isActive ? '#000' : 'transparent',
+                  fontWeight: 900,
+                  fontSize: '1.2rem',
+                  textTransform: 'uppercase',
+                  borderBottom: i === items.length - 1 ? 'none' : '4px solid var(--border-color)',
+                  transition: 'background 0.2s, color 0.2s'
+                }}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop Layout (Pill Nav)
   return (
     <nav
       ref={navRef}
@@ -94,11 +191,7 @@ const PillNav = ({ items, activeHref }) => {
         padding: '5px',
         boxShadow: '4px 4px 0px 0px var(--border-color)',
         gap: '4px',
-        overflowX: 'auto',
-        maxWidth: '90vw',
         position: 'relative',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none',
       }}
     >
       {/* Moving Indicator */}
@@ -150,9 +243,6 @@ const PillNav = ({ items, activeHref }) => {
       })}
 
       <style>{`
-        .pill-nav-container::-webkit-scrollbar {
-          display: none;
-        }
         .nav-pill:hover {
           background: var(--accent);
           color: #000 !important;

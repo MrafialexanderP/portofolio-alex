@@ -71,14 +71,15 @@ const About = () => {
       {/* Wave Transition Section Divider */}
       <div style={{ 
         width: '100%', 
-        overflow: 'hidden', 
+        overflow: 'visible', 
         backgroundColor: 'var(--bg-surface)', 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'relative'
+        position: 'relative',
+        maxWidth: '100vw'
       }}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250" preserveAspectRatio="none" style={{ width: '100%', minWidth: '1000px', height: '180px', display: 'block' }}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 250" preserveAspectRatio="xMidYMid slice" style={{ width: '100%', height: 'auto', minHeight: '180px', display: 'block', maxWidth: '100%' }}>
           {/* Top filled area with a wave at the bottom */}
           <path fill="var(--accent-4)" stroke="var(--border-color)" strokeWidth="6" strokeLinecap="square" 
             d="M-1440,150 C-1120,50 -1020,250 -720,150 C-420,50 -320,250 0,150 C320,50 420,250 720,150 C1020,50 1120,250 1440,150 C1760,50 1860,250 2160,150 C2460,50 2560,250 2880,150 L2880,-100 L-1440,-100 Z" />
@@ -96,9 +97,9 @@ const About = () => {
       </div>
 
       <section className="section" style={{ paddingTop: '4rem', paddingBottom: '4rem', minHeight: 'auto' }}>
-        <div className="container about-content-wrapper" style={{ overflow: 'hidden' }}>
-          <div style={{ display: 'flex', gap: '4rem', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1 1 300px' }} className="brutal-card about-bio">
+        <div className="container about-content-wrapper" style={{ overflow: 'visible', width: '100%' }}>
+          <div style={{ display: 'flex', gap: '4rem', flexWrap: 'wrap' }} className="about-flex-container">
+            <div style={{ flex: '1 1 300px', minWidth: '0' }} className="brutal-card about-bio">
               <div style={{ display: 'inline-block', backgroundColor: 'var(--accent-3)', border: '2px solid #000', padding: '0.2rem 0.5rem', fontWeight: 800, marginBottom: '1rem', color: '#fff' }}>
                 BIO
               </div>
@@ -111,7 +112,7 @@ const About = () => {
               </p>
             </div>
 
-            <div style={{ flex: '1 1 300px' }} className="about-skills">
+            <div style={{ flex: '1 1 300px', minWidth: '0' }} className="about-skills">
               <div style={{ display: 'inline-block', backgroundColor: 'var(--accent-2)', border: '2px solid #000', padding: '0.2rem 0.5rem', fontWeight: 800, marginBottom: '1rem' }}>
                 TECH STACK
               </div>
@@ -159,9 +160,103 @@ const About = () => {
 
       <style>{`
         .about-title { font-size: 2.5rem; }
+        .about-bio { 
+          overflow: visible; 
+          word-wrap: break-word; 
+          overflow-wrap: break-word; 
+          width: 100%;
+          min-width: 0;
+        }
+        .about-bio p { 
+          word-wrap: break-word; 
+          overflow-wrap: break-word;
+          margin: 0;
+        }
+        .about-skills {
+          width: 100%;
+          min-width: 0;
+        }
+        .about-flex-container {
+          gap: 4rem;
+        }
+
+        @media (max-width: 1024px) {
+          .about-title { font-size: 2.2rem; }
+          .about-flex-container {
+            gap: 2rem;
+          }
+        }
+
         @media (max-width: 768px) {
-          .about-title { font-size: 2rem; }
+          .about-title { font-size: 1.8rem; }
+          .about-flex-container {
+            gap: 1.5rem;
+            flex-direction: column;
+          }
+          .about-bio { 
+            flex: 1 1 100% !important;
+            padding: 1.5rem !important;
+            box-shadow: 4px 4px 0px 0px var(--border-color) !important;
+          }
+          .about-bio p { 
+            font-size: 1rem !important;
+            line-height: 1.5;
+            margin-bottom: 1rem !important;
+          }
+          .about-skills {
+            flex: 1 1 100% !important;
+            padding: 1.5rem !important;
+            box-shadow: 4px 4px 0px 0px var(--border-color) !important;
+          }
           .scroll-marquee-text { font-size: 1.2rem !important; }
+        }
+
+        @media (max-width: 640px) {
+          .about-title { font-size: 1.6rem; }
+          .about-flex-container {
+            gap: 1rem;
+          }
+          .about-bio { 
+            flex: 1 1 100% !important;
+            padding: 1.25rem !important;
+            box-shadow: 2px 2px 0px 0px var(--border-color) !important;
+          }
+          .about-bio p { 
+            font-size: 0.95rem !important;
+            line-height: 1.5;
+            margin-bottom: 0.75rem !important;
+            padding-left: 0.75rem !important;
+          }
+          .about-skills {
+            flex: 1 1 100% !important;
+            padding: 1.25rem !important;
+            box-shadow: 2px 2px 0px 0px var(--border-color) !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .about-title { font-size: 1.5rem; }
+          .about-flex-container {
+            gap: 0.75rem;
+          }
+          .about-bio { 
+            flex: 1 1 100% !important;
+            padding: 1rem !important;
+            box-shadow: 2px 2px 0px 0px var(--border-color) !important;
+            margin-bottom: 0.5rem;
+          }
+          .about-bio p { 
+            font-size: 0.9rem !important;
+            line-height: 1.4;
+            margin-bottom: 0.75rem !important;
+            padding-left: 0.5rem !important;
+            border-left-width: 3px !important;
+          }
+          .about-skills {
+            flex: 1 1 100% !important;
+            padding: 1rem !important;
+            box-shadow: 2px 2px 0px 0px var(--border-color) !important;
+          }
         }
       `}</style>
     </div>
